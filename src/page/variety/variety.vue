@@ -72,28 +72,24 @@
           :key="index"
         >
           <div class="con"><img
-              :src="item.objdis.image"
+              :src="'http://121.4.124.243/uploads/' + item.avatar"
               alt=""
               style="width:40px;height:40px;border-radius:5px"
             > </div>
-          <div class="con">{{item.objdis.input}}</div>
-          <div class="con">{{item.objdis.Discount}}</div>
-          <div
-            class="con"
-            v-if="item.state===1"
-          >出售中</div>
-          <div
-            class="con"
-            v-else
-          >已下架/已售罄</div>
-          <div class="con">{{item.stock}}</div>
-          <div class="con">{{item.sales}}</div>
-          <div class="con">{{item.optidata}}</div>
+          <div class="con">{{item.type}}</div>
+          <div class="con">{{item.name}}</div>
+          <div class="con">{{item.master}}</div>
+          <div class="con">{{item.releasetime}}</div>
+          <div class="con">{{item.price}}</div>
+          <div class="con">{{item.deposit}}</div>
+          <div class="con">{{item.state === 0 ? '预售' : item.state === 1 ? '发售中' : '售罄'}}</div>
+          <div class="con">{{item.num}}</div>
+          <!-- <div class="con">{{item.sales}}</div> -->
           <div class="operation">
             <span @click="updateVariety(item)">编辑</span>
-            <span @click="item.state===0&&item.stock>0&&upShelve(item._id,item.state)">上架</span>
-            <span @click="item.state===1&&downShelve(item._id,item.state)">下架</span>
-            <span @click="deLeety(item._id,item.objdis.input)">删除</span>
+            <!-- <span @click="item.state===0&&item.stock>0&&upShelve(item._id,item.state)">上架</span>
+            <span @click="item.state===1&&downShelve(item._id,item.state)">下架</span> -->
+            <span @click="deLeety(item.id,item.input)">删除</span>
           </div>
         </div>
       </div>
@@ -129,6 +125,7 @@
 import { home } from '../../api/api.js'
 // 请求地址
 import { getdishesurl, deledishesurl, editstateurl, searchdishesurl } from '../../api/request.js'
+import qs from 'qs'
 export default {
   data () {
     return {
@@ -141,7 +138,7 @@ export default {
       hasMore: false,
 
       noety: true,
-      tableData: ['', '商品', '价格', '状态', '库存', '月销量', '分类', '操作'],
+      tableData: ['', '分类', '专辑名', '歌手', '发售时间', '售价', '定金', '状态', '库存', '操作'],
       id: '5dfcf328da83f620e4077103',
       contarr: []
     }
@@ -219,15 +216,18 @@ export default {
     },
     // 编辑商品
     updateVariety (contarr) {
-      this.$router.push({ name: 'editvariety', params: { datas: contarr } });
+      console.log(contarr,777);
+      this.$router.push({ name: 'addto', params: { datas: contarr } });
     },
     // 拉取商品
     geTdata () {
       const pages = {
-        page: this.page,
-        size: 7
+        pageNum: this.page,
+        pageSize: 7,
+        search: '',
+        type: '',
       }
-      this.getGoods(pages, getdishesurl)
+      this.getGoods(qs.stringify(pages), getdishesurl)
     },
 
     // 请求商品数据接口
@@ -236,10 +236,11 @@ export default {
         .then((res) => {
           console.log(res)
           // return false
-          if (res.data.msg == 'SUCCESS') {
-            this.hasMore = res.data.data.hasMore
-            this.contarr = res.data.data.listdata
-            this.total = res.data.data.total
+          if (res.data.state) {
+            const {pageNum, totalSize, list} = res.data.data;
+            this.hasMore = pageNum < totalSize
+            this.contarr = list
+            this.total = totalSize
             // console.log(this.contarr);
             this.noety = true
           } else {
@@ -276,14 +277,15 @@ export default {
     // 删除商品2
     deLeapi (ids) {
       let id = {
-        "ids": ids,
+        "id": ids,
       }
-      home(id, deledishesurl)
+      home(qs.stringify(id), deledishesurl)
         .then((res) => {
           // 删除成功
-          console.log(res)
-          this.geTdata()
-          new this.mytitle(this.$message, 'success', '删除成功').funtitle()
+          if(res.data.state) {
+            this.geTdata()
+            new this.mytitle(this.$message, 'success', '删除成功').funtitle()
+          }
         })
         .catch((err) => {
           console.log(err)
@@ -339,11 +341,11 @@ a：hover {
   font-weight: bold;
   color: #909399;
 }
-.var-title div:nth-child(-n + 7) {
-  width: 150px;
+.var-title div:nth-child(-n + 9) {
+  width: 70px;
   text-align: center;
 }
-.var-title div:nth-child(8) {
+.var-title div:nth-child(10) {
   width: 250px;
   text-align: center;
 }
@@ -359,7 +361,7 @@ a：hover {
   border-bottom: 1px solid #ebebeb;
 }
 .var-content .con {
-  width: 150px;
+  width: 70px;
   text-align: center;
 }
 .operation {

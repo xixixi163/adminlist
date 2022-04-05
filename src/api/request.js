@@ -1,22 +1,22 @@
-var url = 'http://localhost:3000/api/'
+var url = 'http://121.4.124.243/'
 
 // 添加为你优选
 let preferurl = `${url}banner/prefer/`
 
 // 商家添加商品
-let dishesurl = `${url}banner/dishes/`
+let dishesurl = `${url}admin/saveAlbum/`
 
 // 拉取商品分类
-let getshopcalssurl = `${url}forshop/getshopcalss`
+let getshopcalssurl = `${url}albumType/getAllType`
 
 // 添加商品分类
-let shopcalssurl = `${url}banner/shopcalss`
+let shopcalssurl = `${url}albumType/saveType/`
 
 // 删除商品分类
-let deleshopcalssurl = `${url}banner/deleshopcalss`
+let deleshopcalssurl = `${url}albumType/removeType/`
 
 // 修改商品
-let updatapreferurl = `${url}banner/updataprefer/`
+let updatapreferurl = `${url}admin/modifyAlbum/`
 
 // 提交商家设置
 let shopossurl = `${url}banner/setshop/`
@@ -37,13 +37,13 @@ let searchdishesurl = `${url}forshop/searchdishes`
 let shopsuccurl = `${url}forshop/shop`
 
 // 登录
-let loginurl = `${url}pcuser/login`
+let loginurl = `${url}user/login`
 
 // 查询是否注册过
 let orregiurl = `${url}pcuser/queryuser`
 
 // 注册
-let rejisturl = `${url}pcuser/register`
+let rejisturl = `${url}user/register`
 
 // 发送验证码
 let codeurl = `${url}pcuser/smcode`
@@ -61,10 +61,10 @@ let getpreferurl = `${url}forshop/getprefer`
 let delepreferurl = `${url}banner/deleprefer`
 
 // 菜品管理
-let getdishesurl = `${url}forshop/getdishes`
+let getdishesurl = `${url}album/getAllAlbum`
 
 // 菜品管理{删除商品}
-let deledishesurl = `${url}banner/deledishes`
+let deledishesurl = `${url}admin/removeAlbum/`
 
 let getopenidurl = `${url}forshop/getopenid`
 
@@ -77,9 +77,12 @@ let getcommeturl = `${url}forshop/merchantmes`
 // 回复评论
 let replaymesurl = `${url}banner/replaymes`
 
+// 上传图片
+let uploadImg = `${url}upload`
+
 export {
   preferurl, dishesurl, getshopcalssurl, shopcalssurl, deleshopcalssurl, updatapreferurl,
   shopossurl, shopsuccurl, loginurl, orregiurl, updateshopurl, updategoodsurl, rejisturl, codeurl, merchantorderurl, getpreferurl, delepreferurl,
   getdishesurl, deledishesurl, editstateurl, searchdishesurl, getopenidurl, getechartdataurl, updatedealurl,
-  getcommeturl, replaymesurl
+  getcommeturl, replaymesurl, uploadImg
 }

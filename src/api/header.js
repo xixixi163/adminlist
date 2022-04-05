@@ -23,6 +23,7 @@ instance.interceptors.request.use(
     console.log(token)
     if (token) {  // 判断是否存在token，如果存在的话，则每个http header Authorization都加上token
       config.headers.Authorization = baseFun();
+      config.headers.token = token
     }
     return config;
   },

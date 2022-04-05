@@ -61,32 +61,32 @@ export default {
           'title': '',
           'router': ''
         },
+        // {
+        //   'id': 1,
+        //   'image': require('../../images/home/zhuye.svg'),
+        //   'title': '商家设置',
+        //   'router': 'home'
+        // },
         {
           'id': 1,
-          'image': require('../../images/home/zhuye.svg'),
-          'title': '商家设置',
-          'router': 'home'
-        },
-        {
-          'id': 2,
           'image': require('../../images/home/dingdan.svg'),
           'title': '订单管理',
           'router': 'order'
         },
+        // {
+        //   'id': 3,
+        //   'image': require('../../images/home/youxuan.svg'),
+        //   'title': '为你优选',
+        //   'router': 'preferen'
+        // },
         {
-          'id': 3,
-          'image': require('../../images/home/youxuan.svg'),
-          'title': '为你优选',
-          'router': 'preferen'
-        },
-        {
-          'id': 4,
+          'id': 2,
           'image': require('../../images/home/caiping.svg'),
-          'title': '菜品管理',
+          'title': '专辑管理',
           'router': 'variety'
         },
         {
-          'id': 5,
+          'id': 3,
           'image': require('../../images/home/pingjia.svg'),
           'title': '评价管理',
           'router': 'message'
@@ -97,12 +97,12 @@ export default {
         //   'title': '营销管理',
         //   'router': 'marketing'
         // },
-        {
-          'id': 6,
-          'image': require('../../images/home/shujufenxi.svg'),
-          'title': '数据分析',
-          'router': 'analysis'
-        }
+        // {
+        //   'id': 6,
+        //   'image': require('../../images/home/shujufenxi.svg'),
+        //   'title': '数据分析',
+        //   'router': 'analysis'
+        // }
 
       ]
     }

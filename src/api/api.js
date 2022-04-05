@@ -2,7 +2,7 @@ import axios from 'axios';
 import instance from './header.js'
 
 var home = function(obje=1,urling){
-  console.log(obje)
+  console.log(11,obje)
 	return new Promise((resolve,reject)=>{
       instance.post((urling),obje)
       .then((res)=>{

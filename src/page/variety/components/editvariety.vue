@@ -2,36 +2,36 @@
   <div class="ordering">
     <div class="set-shop-info">
       <div class="home-list">
-        <div class="home-title">商品分类</div>
+        <div class="home-title">专辑分类</div>
         <el-select
           v-model="value"
-          placeholder="请选择商品分类"
+          placeholder="请选择专辑分类"
           @change="listmin"
         >
           <el-option
             v-for="item in options"
-            :key="item._id"
-            :label="item.classdata"
-            :value="item._id"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
           >
           </el-option>
         </el-select>
       </div>
-      <!-- 商品名称 -->
+      <!-- 专辑名称 -->
       <div class="home-list">
-        <div class="home-title">商品名称</div>
+        <div class="home-title">专辑名称</div>
         <el-input
           v-model="input"
-          placeholder="请填写商品名称"
+          placeholder="请填写专辑名称"
         ></el-input>
       </div>
-      <!-- 商品特色 -->
+      <!-- 专辑特色 -->
       <div class="home-list">
-        <div class="home-title">商品特色</div>
+        <div class="home-title">专辑特色</div>
         <div class="home-search">
           <el-input
             v-model="unique"
-            placeholder="请填写商品特色,比如重量,清甜"
+            placeholder="请填写专辑特色,比如重量,清甜"
           ></el-input>
           <el-row class="home-btning">
             <el-button
@@ -55,36 +55,36 @@
           </el-tag>
         </div>
       </div>
-      <!-- 商品划线价 -->
+      <!-- 专辑划线价 -->
       <div class="home-list">
-        <div class="home-title">商品划线价(单位元)</div>
+        <div class="home-title">专辑划线价(单位元)</div>
         <el-input
           v-model="Price"
-          placeholder="请输入商品划线价"
+          placeholder="请输入专辑划线价"
         ></el-input>
       </div>
-      <!-- 商品优惠价 -->
+      <!-- 专辑优惠价 -->
       <div class="home-list">
-        <div class="home-title">商品优惠价(单位元)</div>
+        <div class="home-title">专辑优惠价(单位元)</div>
         <el-input
           v-model="Discount"
-          placeholder="请输入商品优惠价"
+          placeholder="请输入专辑优惠价"
         ></el-input>
       </div>
-      <!-- 商品库存 -->
+      <!-- 专辑库存 -->
       <div class="home-list">
-        <div class="home-title">商品库存</div>
+        <div class="home-title">专辑库存</div>
         <el-input
           v-model="stock"
-          placeholder="请输入商品库存"
+          placeholder="请输入专辑库存"
         ></el-input>
       </div>
-      <!-- 商品图片 -->
+      <!-- 专辑图片 -->
       <div
         class="home-list"
         v-bind="upImg"
       >
-        <div class="home-title">上传商品图片</div>
+        <div class="home-title">上传专辑图片</div>
         <el-upload
           action="#"
           :show-file-list="false"
@@ -123,23 +123,23 @@ import { updategoodsurl, getdishesurl, dishesurl, getshopcalssurl } from '../../
 export default {
   data () {
     return {
-      // 商品库存
+      // 专辑库存
       stock: '',
-      // 商品名称
+      // 专辑名称
       input: '',
-      // 商品特色
+      // 专辑特色
       tags: [],
       // 划线价
       Price: '',
-      // 商品优惠价
+      // 专辑优惠价
       Discount: '',
-      // 商品分类
+      // 专辑分类
       optidata: '',
       // 上传的图片files
       files: '',
       fileimg: '',
       upfile: '',
-      // 商品特色input
+      // 专辑特色input
       unique: '',
       options: [],
       value: '',
@@ -159,20 +159,19 @@ export default {
     listmin (val) {
       // console.log(val)
       this.options.forEach((item) => {
-        if (item._id === val) {
-          // console.log(item.classdata)
-          this.optidata = item.classdata
+        if (item.id === val) {
+          this.optidata = item.name
         }
       })
     },
 
-    // 删除商品特色
+    // 删除专辑特色
     handleClose (tag) {
       console.log(tag)
       this.tags.splice(tag, 1)
     },
 
-    // 添加商品特色
+    // 添加专辑特色
     addIing () {
       if (this.unique != '') {
         console.log(this.unique)
@@ -225,8 +224,8 @@ export default {
     geTdata () {
       home(1, getshopcalssurl)
         .then((res) => {
-          // console.log(res)
-          if (res.data.msg == 'SUCCESS') {
+          console.log(222222,res)
+          if (res.data.state) {
             // this.noclass = false
             this.options = res.data.data
           } else {

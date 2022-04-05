@@ -36,7 +36,7 @@ const router = new Router({
       name: 'index',
       component: index,
       //重定向
-      redirect: '/home',
+      redirect: '/order',
       //二级路由
       children: [
         {

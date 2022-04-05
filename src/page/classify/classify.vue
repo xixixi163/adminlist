@@ -19,14 +19,14 @@
       >
         <el-tag
           class="eltab"
-          v-for="(item,index) in items"
-          :key="index"
+          v-for="(item) in items"
+          :key="item.id"
           type="warning"
           effect="dark"
           closable
-          @close="handleClose(item._id)"
+          @close="handleClose(item.id)"
         >
-          {{ item.classdata }}
+          {{ item.name }}
         </el-tag>
       </div>
     </div>
@@ -37,7 +37,7 @@
       <div class="home-search">
         <el-input
           v-model="input"
-          placeholder="比如蔬菜,水果,每添加一个点确定"
+          placeholder="比如EP,原声带专辑,每添加一个点确定"
         ></el-input>
         <el-row class="home-btning">
           <el-button
@@ -55,6 +55,7 @@
 import { home } from '../../api/api.js'
 // 请求地址
 import { shopcalssurl, getshopcalssurl, deleshopcalssurl } from '../../api/request.js'
+import qs from 'qs';
 export default {
   data () {
     return {
@@ -75,11 +76,11 @@ export default {
     // 提交数据
     homeData () {
       let id = {
-        "classdata": this.input
+        "name": this.input
       }
-      home(id, shopcalssurl)
+      home(qs.stringify(id), shopcalssurl)
         .then((res) => {
-          if (res.data.msg === 'SUCCESS') {
+          if (res.data.state) {
             new this.mytitle(this.$message, 'success', '提交成功').funtitle()
             this.geTdata()
             this.input = ''
@@ -99,7 +100,7 @@ export default {
       home(1, getshopcalssurl)
         .then((res) => {
           console.log(res)
-          if (res.data.msg == 'SUCCESS') {
+          if (res.data.state) {
             this.items = res.data.data
             this.noclass = true
           } else {
@@ -115,13 +116,15 @@ export default {
     // 删除商品分类
     handleClose (tag) {
       let id = {
-        "ids": tag,
+        "id": tag,
       }
-      home(id, deleshopcalssurl)
+      home(qs.stringify(id), deleshopcalssurl)
         .then((res) => {
           console.log(res)
-          new this.mytitle(this.$message, 'success', '删除成功').funtitle()
-          this.geTdata()
+          if(res.data.state) {
+            new this.mytitle(this.$message, 'success', '删除成功').funtitle()
+            this.geTdata()
+          }
         })
         .catch((err) => {
           console.log(err)

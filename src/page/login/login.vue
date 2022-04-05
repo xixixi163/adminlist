@@ -6,7 +6,14 @@
         <img src="../../images/yi.png" />
       </div>
       <div class="login-cont">
-        <div class="meituan-title">云上生鲜商家中心</div>
+        <div class="meituan-title">音乐专辑管理中心</div>
+        <div v-if="hideing" class="meituan-user">
+          <img src="../../images/zhanghao.svg" />
+          <el-input
+            v-model="userName"
+            placeholder="请输入用户名"
+          ></el-input>
+        </div>
         <div class="meituan-user">
           <img src="../../images/zhanghao.svg" />
           <el-input
@@ -35,21 +42,6 @@
             auto-complete="new-password"
           ></el-input>
         </div>
-        <!-- 验证码 -->
-        <div
-          class="meituan-user codelist"
-          v-if="hideing"
-        >
-          <img src="../../images/mima.svg" />
-          <el-input
-            v-model="codedata"
-            placeholder="请输入验证码"
-          ></el-input>
-          <div
-            class="codeing"
-            @click="prevent && codeName()"
-          >{{codename}}</div>
-        </div>
         <!-- 注册 -->
         <div class="register">
           <p @click="regiSter()">{{codetext}}</p>
@@ -72,6 +64,7 @@
 </template>
 
 <script>
+import qs from 'qs';
 import { mapState } from 'vuex';
 import { home } from '../../api/api.js'
 // 请求地址
@@ -79,6 +72,7 @@ import { loginurl, rejisturl, codeurl, orregiurl, getopenidurl } from '../../api
 export default {
   data () {
     return {
+      userName: '',
       name: '',
       password: '',
       repassword: '',
@@ -135,65 +129,24 @@ export default {
           new this.mytitle(this.$message, 'warning', '发送错误').funtitle()
         })
     },
-    // 发送验证码
-    sendCode () {
-      //时间
-      let that = this
-      var countdown = 60;
-      codetime();
-      function codetime () {
-        if (countdown == 0) {
-          that.codename = "获取验证码";
-          countdown = 60;
-          that.prevent = true;
-          return;
-        } else {
-          that.prevent = false;
-          countdown--;
-          that.codename = "" + countdown + "秒后重发";
-        }
-        setTimeout(() => {
-          codetime();
-        }, 1000)
-      }
-
-      // 发送请求{验证码}
-      console.log('注册')
-      let username = {
-        "name": this.name
-      }
-      home(username, codeurl)
-        .then(res => {
-          console.log(res)
-          if (res.data.msg == 'SUCCESS') {
-            new this.mytitle(this.$message, 'success', '验证码发送成功').funtitle()
-          } else {
-            new this.mytitle(this.$message, 'warning', res.data.msg).funtitle()
-          }
-        })
-        .catch(err => {
-          new this.mytitle(this.$message, 'warning', '验证码发送失败').funtitle()
-        })
-    },
 
     // 注册
     btNregi () {
       console.log('注册')
 
       let username = {
-        "name": this.name,
-        "password": this.password,
-        "code": this.codedata
+        "name": this.userName,
+        "pass": this.password,
+        "phone": this.name
       }
-      home(username, rejisturl)
+      let formData = qs.stringify(username);
+      home(formData, rejisturl)
         .then(res => {
           console.log(res)
-          if (res.data.msg == 'SUCCESS') {
+          if (res.data.code === 200) {
             new this.mytitle(this.$message, 'success', '注册成功').funtitle()
-            localStorage.setItem("openid", res.data.data)
-            this.getOpen()
-            //跳转页面
-            this.$router.push({ name: 'home' })
+            // 切换到登录
+            this.regiSter ();
           } else {
             new this.mytitle(this.$message, 'warning', res.data.msg).funtitle()
             if (this.password != this.repassword) {
@@ -208,22 +161,24 @@ export default {
     },
 
     // 登录
-    btNs () {
+    async btNs () {
       let username = {
-        "name": this.name,
-        "password": this.password
+        phone: this.name,
+        pass: this.password
       }
-      home(username, loginurl)
+      let formData = qs.stringify(username);
+      console.log(formData,22);
+      home(formData, loginurl)
+      
         .then((res) => {
           // 返回token
           console.log(res)
-          if (res.data.msg == 'SUCCESS') {
-            console.log('登录成功')
+          if (res.data.code === 200) {
             // 存储到本地
-            localStorage.setItem("openid", res.data.data)
-            this.getOpen()
+            localStorage.setItem("openid", res.data.data.token)
+            // this.getOpen()
             //跳转页面
-            this.$router.push({ name: 'home' })
+            this.$router.push({ name: 'order' })
           } else {
             new this.mytitle(this.$message, 'warning', res.data.msg).funtitle()
           }
@@ -283,7 +238,7 @@ export default {
 
 <style scoped="scoped">
 #backcont {
-  background-image: url(../../images/beijing.jpg);
+  background-image: url(../../images/bj.jpg);
   background-attachment: fixed;
   background-repeat: no-repeat;
   background-size: cover;
@@ -300,7 +255,7 @@ export default {
 .login-cont {
   width: 500px;
   height: 390px;
-  background: rgba(253, 170, 134, 0.7);
+  background: rgba(14, 180, 204, 0.6);
   border-radius: 5px;
 }
 
@@ -340,7 +295,7 @@ export default {
 .meituan-btn {
   width: 200px;
   height: 40px;
-  background: #409eff;
+  background: #2fbfd3;
   display: flex;
   align-items: center;
   justify-content: center;
