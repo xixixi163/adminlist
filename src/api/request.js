@@ -49,7 +49,16 @@ let rejisturl = `${url}user/register`
 let codeurl = `${url}pcuser/smcode`
 
 // 商家订单
-let merchantorderurl = `${url}forshop/merchantorder`
+let merchantorderurl = `${url}admin/findAllOrder`
+
+// 发货
+let deliveryurl = `${url}admin/delivery`
+
+// 同意退款
+let agreeRefunded = `${url}admin/confirm`
+
+// 完成订单
+let closeOrder = `${url}admin/complete`
 
 // 订单已处理，更改处理状态
 let updatedealurl = `${url}banner/updatedeal`
@@ -72,10 +81,10 @@ let getopenidurl = `${url}forshop/getopenid`
 let getechartdataurl = `${url}banner/getechart`
 
 // 获取评论信息
-let getcommeturl = `${url}forshop/merchantmes`
+let getcommeturl = `${url}admin/findAllEvaluation`
 
 // 回复评论
-let replaymesurl = `${url}banner/replaymes`
+let replaymesurl = `${url}admin/saveReply`
 
 // 上传图片
 let uploadImg = `${url}upload`
@@ -84,5 +93,5 @@ export {
   preferurl, dishesurl, getshopcalssurl, shopcalssurl, deleshopcalssurl, updatapreferurl,
   shopossurl, shopsuccurl, loginurl, orregiurl, updateshopurl, updategoodsurl, rejisturl, codeurl, merchantorderurl, getpreferurl, delepreferurl,
   getdishesurl, deledishesurl, editstateurl, searchdishesurl, getopenidurl, getechartdataurl, updatedealurl,
-  getcommeturl, replaymesurl, uploadImg
+  getcommeturl, replaymesurl, uploadImg, deliveryurl, agreeRefunded, closeOrder
 }

@@ -5,7 +5,7 @@
   >
     <!-- 顶部 -->
     <div class="sidebar-top">
-      <div>商家中心</div>
+      <div>商城管理中心</div>
       <div @click="signOut()">退出</div>
     </div>
     <div class="sidebar-cont">
@@ -113,10 +113,10 @@ export default {
       console.log(id)
       this.num = id
 
-      if (id === 3 && localStorage.getItem('key') != '1607850685851') {
-        new this.mytitle(this.$message, 'warning', '没有权限').funtitle()
-        return
-      }
+      // if (id === 3 && localStorage.getItem('key') != '1607850685851') {
+      //   new this.mytitle(this.$message, 'warning', '没有权限').funtitle()
+      //   return
+      // }
       // 存储到本地
       localStorage.setItem("ids", id)
       // 传到order.vue 有新订单，oeder刷新

@@ -14,7 +14,7 @@
       <el-row class="btns-lable">
         <div class="demo-input-suffix searchflex">
           <el-input
-            placeholder="按商品模糊搜索"
+            placeholder="输入歌名或歌手模糊搜索"
             prefix-icon="el-icon-search"
             v-model="searchname"
           >
@@ -23,21 +23,6 @@
             type="success"
             icon="el-icon-search"
             @click="searchByName"
-          >搜索</el-button>
-        </div>
-      </el-row>
-      <el-row class="btns-lable">
-        <div class="demo-input-suffix searchflex">
-          <el-input
-            placeholder="按分类模糊搜索"
-            prefix-icon="el-icon-search"
-            v-model="searchclassi"
-          >
-          </el-input>
-          <el-button
-            type="success"
-            icon="el-icon-search"
-            @click="searchByClassi"
           >搜索</el-button>
         </div>
       </el-row>
@@ -124,7 +109,7 @@
 <script>
 import { home } from '../../api/api.js'
 // 请求地址
-import { getdishesurl, deledishesurl, editstateurl, searchdishesurl } from '../../api/request.js'
+import { getdishesurl, deledishesurl, editstateurl } from '../../api/request.js'
 import qs from 'qs'
 export default {
   data () {
@@ -161,12 +146,12 @@ export default {
         return
       }
       const pages = {
-        page: this.page,
-        size: 7,
-        searchdata: searchdata,
-        type: 2
+        pageNum: this.page,
+        pageSize: 7,
+        search: searchdata,
+        type: '',
       }
-      this.getGoods(pages, searchdishesurl)
+      this.getGoods(qs.stringify(pages), getdishesurl)
     },
     searchByName () {
       let searchdata = this.delSpace(this.searchname)
@@ -175,48 +160,20 @@ export default {
         return
       }
       const pages = {
-        page: this.page,
-        size: 7,
-        searchdata: searchdata,
-        type: 1
+        pageNum: this.page,
+        pageSize: 7,
+        search: searchdata,
+        type: '',
       }
       // console.log(this.searchname);
-      this.getGoods(pages, searchdishesurl)
+      this.getGoods(qs.stringify(pages), getdishesurl)
     },
     // 下架
     upShelve (ids, state) {
       this.editState(ids, state)
     },
-    // 上架
-    downShelve (ids, state) {
-      this.editState(ids, state)
-    },
-    // 修改上架下架状态
-    editState (ids, state) {
-      const obj = {
-        ids,
-        state
-      }
-      home(obj, editstateurl)
-        .then((res) => {
-          // 成功
-          console.log(res)
-          if (res.data.msg == 'SUCCESS') {
-            this.geTdata()
-            new this.mytitle(this.$message, 'success', '修改成功').funtitle()
-          } else {
-            new this.mytitle(this.$message, 'warning', res.data.msg).funtitle()
-          }
-
-        })
-        .catch((err) => {
-          console.log(err)
-          new this.mytitle(this.$message, 'info', '修改失败').funtitle()
-        })
-    },
     // 编辑商品
     updateVariety (contarr) {
-      console.log(contarr,777);
       this.$router.push({ name: 'addto', params: { datas: contarr } });
     },
     // 拉取商品
@@ -342,11 +299,11 @@ a：hover {
   color: #909399;
 }
 .var-title div:nth-child(-n + 9) {
-  width: 70px;
+  width: 90px;
   text-align: center;
 }
 .var-title div:nth-child(10) {
-  width: 250px;
+  width: 200px;
   text-align: center;
 }
 .var-table {
@@ -361,14 +318,14 @@ a：hover {
   border-bottom: 1px solid #ebebeb;
 }
 .var-content .con {
-  width: 70px;
+  width: 90px;
   text-align: center;
 }
 .operation {
   display: flex;
   align-items: center;
   justify-content: space-around;
-  width: 250px;
+  width: 200px;
 }
 .operation span {
   background-color: #ecf5ff;

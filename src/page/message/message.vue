@@ -2,7 +2,7 @@
   <div class="ordering set-shop-info">
     <!-- 添加菜品 -->
     <div class="btns">
-      <el-row class="btns-lable">
+      <!-- <el-row class="btns-lable">
         <div class="demo-input-suffix searchflex">
           <el-date-picker
             v-model="valuedate"
@@ -16,8 +16,8 @@
             @click="searchByDate"
           >搜索</el-button>
         </div>
-      </el-row>
-      <el-row class="btns-lable">
+      </el-row> -->
+      <!-- <el-row class="btns-lable">
         <div class="demo-input-suffix searchflex">
           <el-input
             placeholder="按用户昵称模糊搜索"
@@ -31,7 +31,7 @@
             @click="searchByName"
           >搜索</el-button>
         </div>
-      </el-row>
+      </el-row> -->
 
       <!-- <el-row>
         <router-link to="/addto">
@@ -62,13 +62,13 @@
         :default-sort="{prop: 'time', order: 'descending'}"
       >
         <el-table-column
-          prop="avatarUrl"
+          prop="avatar"
           label="头像"
           width="170"
         >
           <template slot-scope="scope">
             <img
-              :src="scope.row.avatarUrl"
+              :src="'http://121.4.124.243/uploads/' + scope.row.avatar"
               alt=""
               style="width: 25px;height: 25px;border-radius: 25%;display: block;margin: auto;"
             >
@@ -78,27 +78,27 @@
           prop="time"
           label="评价时间"
           sortable
-          width="170"
+          width="210"
         >
         </el-table-column>
         <el-table-column
-          prop="nickName"
+          prop="uname"
           label="用户昵称"
-          width="170"
+          width="130"
         >
         </el-table-column>
         <el-table-column
-          prop="usermess"
+          prop="content"
           label="评价内容"
-          min-width="600"
+          min-width="580"
         >
           <template slot-scope="scope">
-            <span class="mesinfo">{{scope.row.usermess}}</span>
+            <span class="mesinfo">{{scope.row.content}}</span>
           </template>
         </el-table-column>
         <el-table-column
           label="操作"
-          min-width="150"
+          min-width="200"
         >
           <template slot-scope="scope">
             <el-button
@@ -107,7 +107,7 @@
             >详情</el-button>
             <el-link
               icon="el-icon-edit"
-              v-show="scope.row.replaydata.mershmess===''"
+              v-show="scope.row.replies.length <= 0"
               @click="handleView(scope.$index, scope.row)"
             >待回复</el-link>
           </template>
@@ -140,20 +140,20 @@
       <div class="mesdetail">
         <div class="userinfo">
           <img
-            :src="mesInfo.avatarUrl"
+            :src="'http://121.4.124.243/uploads/' + mesInfo.avatar"
             alt=""
           >
           <div class="username">
-            <div class="name">{{mesInfo.nickName}}</div>
+            <div class="name">{{mesInfo.uname}}</div>
             <div class="mestime">{{mesInfo.time}}</div>
           </div>
         </div>
         <div class="mescontent">
-          <span style="color:#606060;font-size:17px;background:#f5f5f5">评价：</span>{{mesInfo.usermess}}
+          <span style="color:#606060;font-size:17px;background:#f5f5f5">评价：</span>{{mesInfo.content}}
         </div>
-        <div v-if="mesInfo.replaydata.mershmess">
+        <div v-if="mesInfo.replies.length >0">
           <div class="merchcontent">
-            <span style="color:#606060;font-size:17px;background:#f5f5f5">回复内容：</span>{{mesInfo.replaydata.mershmess}}
+            <span style="color:#606060;font-size:17px;background:#f5f5f5">{{'回复内容(' + mesInfo.replies[0].time + ')：'}}</span>{{mesInfo.replies[0].content}}
           </div>
           <div style="margin-top:15px;display: flex;justify-content: center;">
             <el-button
@@ -217,6 +217,7 @@
 
 <script>
 import { home } from '../../api/api.js'
+import qs from 'qs'
 // 请求地址
 import { getcommeturl, replaymesurl } from '../../api/request.js'
 export default {
@@ -255,15 +256,20 @@ export default {
         return
       }
       const obj = {
-        ids: this.mesInfo._id,
-        replayContent
+        eid: this.mesInfo.id,
+        content: replayContent,
+        uid: this.mesInfo.id,
+        time: ''
       }
-      home(obj, replaymesurl)
+      home(qs.stringify(obj), replaymesurl)
         .then((res) => {
           // 成功
           console.log(res)
-          if (res.data.msg == 'SUCCESS') {
-            this.mesInfo.replaydata.mershmess = replayContent
+          if (res.data.state) {
+            this.mesInfo.replies.push({
+              content: replayContent,
+              time: ''
+            })
             new this.mytitle(this.$message, 'success', '回复成功').funtitle()
           } else {
             new this.mytitle(this.$message, 'warning', res.data.msg).funtitle()
@@ -291,8 +297,8 @@ export default {
     tabsBtn (item, index) {
       this.num = index;
       const pages = {
-        page: this.page,
-        size: 10,
+        pageNum: this.page,
+        pageSize: 7,
         type: '',
         searchdata: '',
       }
@@ -302,7 +308,7 @@ export default {
       } else {
         this.classcoms = '';
       }
-      this.getClassMes(pages)
+      // this.getClassMes(pages)
     },
     // 日期格式化
     formatDate (value) {
@@ -327,17 +333,17 @@ export default {
       }
       // console.log(date);
       const pages = {
-        page: this.page,
-        size: 10,
+        pageNum: this.page,
+        pageSize: 7,
         type: 'fordate',
         searchdata: date
       }
-      if (this.classcoms) {
-        pages['classmessage'] = this.classcoms
-        this.getClassMes(pages)
-      } else {
+      // if (this.classcoms) {
+      //   pages['classmessage'] = this.classcoms
+      //   this.getClassMes(pages)
+      // } else {
         this.getMes(pages)
-      }
+      // }
     },
     searchByName () {
       let searchdata = this.delSpace(this.searchname)
@@ -346,17 +352,17 @@ export default {
         return
       }
       const pages = {
-        page: this.page,
-        size: 10,
+        pageNum: this.page,
+        pageSize: 7,
         searchdata: searchdata,
         type: 'forname'
       }
-      if (this.classcoms) {
-        pages['classmessage'] = this.classcoms
-        this.getClassMes(pages)
-      } else {
+      // if (this.classcoms) {
+      //   pages['classmessage'] = this.classcoms
+      //   this.getClassMes(pages)
+      // } else {
         this.getMes(pages)
-      }
+      // }
 
     },
     detailMes (item) {
@@ -365,16 +371,16 @@ export default {
     // 拉取商品
     getData () {
       const pages = {
-        page: this.page,
-        size: 10
+        pageNum: this.page,
+        pageSize: 7,
       }
       this.getMes(pages)
     },
     // 评论分类
     getClassMes (pages) {
-      home(pages, getcommeturl)
+      home(qs.stringify(pages), getcommeturl)
         .then((res) => {
-          // console.log(res)
+          console.log(res, 'comment')
           // return false
           if (res.data.msg == 'SUCCESS') {
             this.hasMore = res.data.data.hasMore
@@ -409,37 +415,15 @@ export default {
     },
     // 请求数据接口
     getMes (pages) {
-      home(pages, getcommeturl)
+      home(qs.stringify(pages), getcommeturl)
         .then((res) => {
-          console.log(res)
+          console.log(res, 9099)
           // return false
-          if (res.data.msg == 'SUCCESS') {
-            this.hasMore = res.data.data.hasMore
-            this.contarr = res.data.data.listdata
-            this.total = res.data.data.total
-            // console.log(this.contarr);
-            if (this.contarr.length != 0) {
-              // 评论标签去重复去空
-              // 取出标签分类map 标签去重Set 去空filter
-              let comLable = [...new Set(this.contarr.map(item => item.classmessage))].filter(item => item)
-
-              // 评论标签 ‘全部’和所有标签合并 传给子
-              this.tabsEva = ['全部', ...comLable];
-
-              this.tableData = this.contarr.map(item => {
-                return {
-                  avatarUrl: item.messagedata.avatarUrl,
-                  nickName: item.messagedata.nickName,
-                  time: item.messagedata.time,
-                  usermess: item.messagedata.usermess,
-                  openid: item.openid,
-                  _id: item._id,
-                  merchantid: item.merchantid,
-                  replaydata: item.replaydata
-                }
-              })
-            }
-
+          if (res.data.state) {
+            let { pageNum, totalSize, totalNum, list } = res.data.data
+            this.hasMore = pageNum < totalNum
+            this.tableData = list
+            this.total = totalSize
             this.noety = true
           } else {
             this.noety = false

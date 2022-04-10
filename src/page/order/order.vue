@@ -3,7 +3,7 @@
     <div class="banner">
       <!-- 添加菜品 -->
       <div class="btns">
-        <el-row class="btns-lable">
+        <!-- <el-row class="btns-lable">
           <div class="demo-input-suffix searchflex">
             <el-button
               type="success"
@@ -11,8 +11,8 @@
               @click="searchAll"
             >显示全部</el-button>
           </div>
-        </el-row>
-        <el-row class="btns-lable">
+        </el-row> -->
+        <!-- <el-row class="btns-lable">
           <div class="demo-input-suffix searchflex">
             <el-date-picker
               v-model="valuedate"
@@ -26,9 +26,9 @@
               @click="searchByDate"
             >搜索</el-button>
           </div>
-        </el-row>
+        </el-row> -->
 
-        <el-row class="btns-lable">
+        <!-- <el-row class="btns-lable">
           <div class="demo-input-suffix searchflex">
             <el-input
               placeholder="按客户名模糊搜索"
@@ -42,7 +42,7 @@
               @click="searchByCustomer"
             >搜索</el-button>
           </div>
-        </el-row>
+        </el-row> -->
       </div>
       <!-- 表格布局 -->
       <div
@@ -58,37 +58,40 @@
         </div>
         <!-- 内容 -->
         <div
-          v-for="(item,index) in neworder"
+          v-for="(item,index) in contarr"
           :key="index"
         >
 
           <div class="var-banner">
-            <div>{{item.timeing}}</div>
+            <div>{{item.time}}</div>
             <div class="var-content-name">
-              <span>{{item.peopleobj.name}}</span>
-              <span>{{item.peopleobj.address}}</span>
-              <span>{{item.peopleobj.iphone}}</span>
+              <span>{{item.uname}}</span>
+              <span>{{item.address}}</span>
+              <span>{{item.phone}}</span>
             </div>
             <div class="var-list">
               <div
-                class="var-content"
-                v-for="(itemdata,index) in item.arrinfo"
-                :key="index"
-              >
-                <div>{{itemdata.name}}</div>
-                <div>{{itemdata.amount}}</div>
-                <div>交易成功</div>
-                <div>{{itemdata.totalPrice}}</div>
+                class="var-content">
+                <div>{{item.name}}</div>
+                <div>{{item.count}}</div>
+                <div>{{getState(item.state)}}</div>
+                <div>{{item.price}}</div>
                 <div>
                   <span
-                    v-if="item.deal===1"
+                    v-if="item.state===0 || item.state === 2"
                     class="isdeal"
-                  >已处理</span>
+                    @click="deliver(item)"
+                  >发货</span>
                   <span
-                    v-else
+                    v-if="item.state===4"
                     class="orderbtn"
-                    @click="comfirmDeal(item.ids,item.deal)"
-                  >确认处理</span>
+                    @click="closeDeal(item)"
+                  >交易完成</span>
+                  <span
+                    v-if="item.state===6"
+                    class="orderbtn"
+                    @click="agreeRefunded(item)"
+                  >同意退款</span>
                 </div>
               </div>
             </div>
@@ -125,9 +128,10 @@
 <script>
 import { getdata, home } from '../../api/api.js'
 // 请求地址
-import { merchantorderurl, updatedealurl } from '../../api/request.js'
+import { merchantorderurl, updatedealurl, deliveryurl, agreeRefunded, closeOrder } from '../../api/request.js'
 // 中转
 import Utils from '../../api/util.js'
+import qs from 'qs'
 export default {
   name: 'preferen',
   data () {
@@ -149,6 +153,84 @@ export default {
   },
 
   methods: {
+    closeDeal(order) {
+      const obj = {
+        id: order.id
+      }
+      home(qs.stringify(obj), closeOrder)
+        .then((res) => {
+          // 成功
+          console.log(res)
+          if (res.data.state) {
+            new this.mytitle(this.$message, 'success', '同意退款成功').funtitle()
+            this.orderFun()
+          } else {
+            new this.mytitle(this.$message, 'warning', res.data.msg).funtitle()
+          }
+
+        })
+        .catch((err) => {
+          console.log(err)
+          new this.mytitle(this.$message, 'info', '同意退款失败').funtitle()
+        })
+    },
+    agreeRefunded(order) {
+      const obj = {
+        id: order.id
+      }
+      home(qs.stringify(obj), agreeRefunded)
+        .then((res) => {
+          // 成功
+          console.log(res)
+          if (res.data.state) {
+            new this.mytitle(this.$message, 'success', '同意退款成功').funtitle()
+            this.orderFun()
+          } else {
+            new this.mytitle(this.$message, 'warning', res.data.msg).funtitle()
+          }
+
+        })
+        .catch((err) => {
+          console.log(err)
+          new this.mytitle(this.$message, 'info', '同意退款失败').funtitle()
+        })
+    },
+    deliver(order) {
+      const obj = {
+        id: order.id
+      }
+      home(qs.stringify(obj), deliveryurl)
+        .then((res) => {
+          // 成功
+          console.log(res)
+          if (res.data.state) {
+            new this.mytitle(this.$message, 'success', '发货成功').funtitle()
+            this.orderFun()
+          } else {
+            new this.mytitle(this.$message, 'warning', res.data.msg).funtitle()
+          }
+
+        })
+        .catch((err) => {
+          console.log(err)
+          new this.mytitle(this.$message, 'info', '发货失败').funtitle()
+        })
+    },
+    getState (state) {
+      if (state === 0) {
+        return '已付款'
+      } else if (state === 3) {
+        return '已发货'
+      } else if (state === 4) {
+        return '确认收货'
+      } else if (state === 5) {
+        return '交易完成'
+      } else if (state === 6) {
+        return '退款中'
+      } else if (state === 7) {
+        return '交易失败'
+      }
+    },
     // 确认处理了订单
     comfirmDeal (ids, deal) {
       const obj = {
@@ -198,8 +280,8 @@ export default {
       }
       // console.log(date);
       const pages = {
-        page: this.page,
-        size: 6,
+        pageNum: this.page,
+        pageSize: 7,
         type: 'bydate',
         searchdata: date
       }
@@ -212,8 +294,8 @@ export default {
         return
       }
       const pages = {
-        page: this.page,
-        size: 6,
+        pageNum: this.page,
+        pageSize: 7,
         type: 'bycus',
         searchdata: this.searchName
       }
@@ -229,43 +311,42 @@ export default {
 
     orderFun () {
       const pages = {
-        page: this.page,
-        size: 6,
-        type: 'all',
-        searchdata: ''
+        pageNum: this.page,
+        pageSize: 7,
       }
       this.getOrders(pages)
     },
     getOrders (pages) {
-      home(pages, merchantorderurl)
+      home(qs.stringify(pages), merchantorderurl)
         .then((res) => {
           console.log(res)
           // 新订单提醒，点击订单管理刷新页面成功，传值给index页面，取消红点提醒
-          Utils.$emit('neworder', 0);
-          if (res.data.msg == '没有订单数据') {
+          // Utils.$emit('neworder', 0);
+          if (!res.data.state) {
             this.noety = false
           } else {
-            this.hasMore = res.data.data.hasMore
-            this.contarr = res.data.data.listdata
-            this.total = res.data.data.total
+            let { pageNum, totalSize, totalNum, list } = res.data.data
+            this.hasMore = pageNum < totalNum
+            this.contarr = list
+            this.total = totalSize
             this.noety = true
             // console.log(this.neworder);
             // 筛选需要的数据
-            this.neworder = this.contarr.map((item) => {
-              let timeing = item.wxorder.timeing
-              let arrinfo = item.wxorder.Paymentinfor.arrinfo
-              let peopleobj = item.wxorder.Paymentinfor.peopleobj
-              let deal = item.deal
-              let ids = item._id
-              return {
-                timeing,
-                arrinfo,
-                peopleobj,
-                deal,
-                ids
-              }
-            })
-            console.log(this.neworder)
+            // this.neworder = this.contarr.map((item) => {
+            //   let timeing = item.wxorder.timeing
+            //   let arrinfo = item.wxorder.Paymentinfor.arrinfo
+            //   let peopleobj = item.wxorder.Paymentinfor.peopleobj
+            //   let deal = item.deal
+            //   let ids = item._id
+            //   return {
+            //     timeing,
+            //     arrinfo,
+            //     peopleobj,
+            //     deal,
+            //     ids
+            //   }
+            // })
+            // console.log(this.neworder)
             // this.neworder = newOrder
           }
 
@@ -371,6 +452,7 @@ a：hover {
   /* border: 1px solid #d9ecff; */
   border-radius: 4px;
   padding: 5px 10px;
+  cursor: pointer;
 }
 /* 菜品 */
 .var-banner {
@@ -380,7 +462,7 @@ a：hover {
   border-bottom: 1px solid #ebebeb;
 }
 .var-list {
-  width: 970px;
+  width: 880px;
 }
 .var-content {
   display: flex;
